@@ -9,11 +9,11 @@ async function init() {
   if (!SQL) {
     try {
       const initSqlJs = (await import('sql.js')).default;
-      SQL = await initSqlJs({
-        locateFile: (file) => `https://sql.js.org/dist/${file}`
-      });
+      const wasmBinary = await fetch('https://cdn.jsdelivr.net/npm/sql.js/dist/sql-wasm.wasm')
+        .then(res => res.arrayBuffer());
+      SQL = await initSqlJs({ wasmBinary });
     } catch (e) {
-      console.error('Failed to load sql.js:', e);
+      console.error('Failed to load sql.js wasm:', e);
       throw e;
     }
   }
