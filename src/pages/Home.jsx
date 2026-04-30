@@ -1,4 +1,4 @@
-import { createSignal, onMount } from 'solid-js';
+import { createSignal, onMount, Show, For } from 'solid-js';
 import db from '../lib/db';
 import { nanoid } from 'nanoid';
 
@@ -48,22 +48,26 @@ export default function Home(props){
     <div class="home">
       <h1>🎮 Poke Guess Game</h1>
       
-      {error() && <div class="error-msg">{error()}</div>}
+      <Show when={error()}>
+        <div class="error-msg">{error()}</div>
+      </Show>
       
-      {mode() === 'list' ? (
+      <Show when={mode() === 'list'}>
         <div class="home-list">
-          {players().length > 0 && (
+          <Show when={players().length > 0}>
             <div class="players-section">
               <h2>Select Player</h2>
               <div class="player-list">
-                {players().map(p => (
-                  <button type="button" onClick={() => selectPlayer(p)} class="player-btn">
-                    {p.avatar} {p.name}
-                  </button>
-                ))}
+                <For each={players()}>
+                  {(p) => (
+                    <button type="button" onClick={() => selectPlayer(p)} class="player-btn">
+                      {p.avatar} {p.name}
+                    </button>
+                  )}
+                </For>
               </div>
             </div>
-          )}
+          </Show>
           <button 
             type="button" 
             onClick={() => {
@@ -75,7 +79,8 @@ export default function Home(props){
             {players().length > 0 ? 'New Player' : 'Start Game'}
           </button>
         </div>
-      ) : (
+      </Show>
+      <Show when={mode() === 'new'}>
         <div class="home-new">
           <input 
             placeholder="Enter your name" 
@@ -92,7 +97,7 @@ export default function Home(props){
           >
             {loading() ? 'Loading...' : 'Play'}
           </button>
-          {players().length > 0 && (
+          <Show when={players().length > 0}>
             <button 
               type="button" 
               onClick={() => setMode('list')} 
@@ -101,9 +106,9 @@ export default function Home(props){
             >
               Back
             </button>
-          )}
+          </Show>
         </div>
-      )}
+      </Show>
     </div>
   );
 }

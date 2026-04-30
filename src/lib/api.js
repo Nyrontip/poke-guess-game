@@ -9,10 +9,9 @@ function _getCache() {
 function _setCache(obj){ sessionStorage.setItem(CACHE_KEY, JSON.stringify(obj)); }
 
 async function fetchPokemon(id) {
-  const cache = _getCache();
-  if (cache[id]) return cache[id];
-  const proxy = 'https://corsproxy.io/?';
-  const res = await fetch(proxy + API_BASE + id);
+   const cache = _getCache();
+   if (cache[id]) return cache[id];
+   const res = await fetch(API_BASE + id);
   if (!res.ok) throw new Error('PokeAPI fetch failed: ' + res.status);
   const data = await res.json();
   const payload = {

@@ -1,4 +1,4 @@
-import { createSignal, onMount } from 'solid-js';
+import { createSignal, onMount, Show, For } from 'solid-js';
 import db from '../lib/db';
 import { nanoid } from 'nanoid';
 
@@ -30,32 +30,36 @@ export default function Results(props){
         <div class="correct-count">{s.correct}/10</div>
         <div class="time-count">{Math.round(s.totalTimeMs / 1000)}s</div>
       </div>
-      {!saved() ? (
+      <Show when={!saved()}>
         <button type="button" onClick={save} class="save-btn">Save Score</button>
-      ) : (
+      </Show>
+      <Show when={saved()}>
         <p class="saved">✓ Score saved!</p>
-      )}
+      </Show>
       
       <div class="scoreboard">
         <h3>Top Scores</h3>
-        {scores().length > 0 ? (
+        <Show when={scores().length > 0}>
           <table>
             <thead>
               <tr><th>Player</th><th>Correct</th><th>Time</th></tr>
             </thead>
             <tbody>
-              {scores().map((sc, i) => (
-                <tr class={sc.player_id === props.session.player.id ? 'current-player' : ''}>
-                  <td>{i+1}. {sc.name || 'Unknown'}</td>
-                  <td>{sc.correct}/10</td>
-                  <td>{Math.round(sc.total_time_ms / 1000)}s</td>
-                </tr>
-              ))}
+              <For each={scores()}>
+                {(sc, i) => (
+                  <tr class={sc.player_id === props.session.player.id ? 'current-player' : ''}>
+                    <td>{i()+1}. {sc.name || 'Unknown'}</td>
+                    <td>{sc.correct}/10</td>
+                    <td>{Math.round(sc.total_time_ms / 1000)}s</td>
+                  </tr>
+                )}
+              </For>
             </tbody>
           </table>
-        ) : (
+        </Show>
+        <Show when={scores().length === 0}>
           <p>No scores yet</p>
-        )}
+        </Show>
       </div>
 
       <div class="actions">

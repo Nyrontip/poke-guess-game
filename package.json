@@ -18,9 +18,10 @@
     "@types/bun": "latest"
   },
   "dependencies": {
+    "nanoid": "^4.0.2",
     "solid-js": "^1.9.5",
     "sql.js": "^1.8.0",
-    "nanoid": "^4.0.2"
+    "vercel": "^52.2.0"
   },
   "module": "src/index.jsx",
   "private": true

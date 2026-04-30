@@ -1,30 +1,47 @@
-import { createSignal, onMount, onCleanup, createEffect } from 'solid-js';
-import { fetchPokemon } from '../lib/api';
+import {
+  createSignal,
+  onMount,
+  onCleanup,
+  createEffect,
+  Show,
+  For,
+} from "solid-js";
+import { fetchPokemon } from "../lib/api";
 
-function randInt(max){ return Math.floor(Math.random()*max)+1; }
+function randInt(max) {
+  return Math.floor(Math.random() * max) + 1;
+}
 
 async function genQuestion(usedIds) {
   let id = randInt(151);
   while (usedIds.has(id)) id = randInt(151);
   usedIds.add(id);
-  
+
   const correct = await fetchPokemon(id);
   const distractors = [];
-  while (distractors.length < 4) {
+  while (distractors.length < 5) {
     let dId = randInt(151);
     if (dId !== id && !usedIds.has(dId)) {
       try {
         const d = await fetchPokemon(dId);
         distractors.push(d.name);
-      } catch(e) {}
+      } catch (e) {}
     }
   }
-  
-  const options = [correct.name, ...distractors].sort(() => Math.random() - 0.5);
-  return { id: correct.id, name: correct.name, sprite: correct.sprites.front_default, types: correct.types, options };
+
+  const options = [correct.name, ...distractors].sort(
+    () => Math.random() - 0.5,
+  );
+  return {
+    id: correct.id,
+    name: correct.name,
+    sprite: correct.sprites.front_default,
+    types: correct.types,
+    options,
+  };
 }
 
-export default function Game(props){
+export default function Game(props) {
   const [questionIdx, setQuestionIdx] = createSignal(0);
   const [questions, setQuestions] = createSignal([]);
   const [timeLeft, setTimeLeft] = createSignal(12);
@@ -34,24 +51,24 @@ export default function Game(props){
   const [answered, setAnswered] = createSignal(false);
   let timerInterval;
 
-  onMount(async ()=>{
+  onMount(async () => {
     const qs = [];
     const used = new Set();
-    for(let i=0;i<10;i++){
+    for (let i = 0; i < 10; i++) {
       try {
         const q = await genQuestion(used);
         qs.push(q);
-      } catch(e) {
-        console.error('Failed to generate question', e);
+      } catch (e) {
+        console.error("Failed to generate question", e);
       }
     }
     setQuestions(qs);
     setStartTime(Date.now());
     setLoading(false);
-    
+
     // Start timer
     timerInterval = setInterval(() => {
-      setTimeLeft(t => {
+      setTimeLeft((t) => {
         if (t <= 1 && !answered()) {
           // Auto-fail if time's up
           handleAutoFail();
@@ -60,9 +77,9 @@ export default function Game(props){
         return t > 0 ? t - 1 : 0;
       });
     }, 1000);
-    
+
     onCleanup(() => {
-      if(timerInterval) clearInterval(timerInterval);
+      if (timerInterval) clearInterval(timerInterval);
     });
   });
 
@@ -79,7 +96,7 @@ export default function Game(props){
     if (idx === 9) {
       // Game finished
       const totalTime = Date.now() - startTime();
-      props.onFinish({correct: correct(), totalTimeMs: totalTime});
+      props.onFinish({ correct: correct(), totalTimeMs: totalTime });
     } else {
       // Next question
       setQuestionIdx(idx + 1);
@@ -88,14 +105,14 @@ export default function Game(props){
     }
   }
 
-  function answer(choice){
+  function answer(choice) {
     if (answered()) return;
     setAnswered(true);
     const q = questions()[questionIdx()];
-    if(choice === q.name) {
-      setCorrect(c => c + 1);
+    if (choice === q.name) {
+      setCorrect((c) => c + 1);
     }
-    
+
     // Delay before advancing
     setTimeout(() => {
       advanceQuestion();
@@ -107,28 +124,36 @@ export default function Game(props){
   return (
     <div class="game">
       <div class="game-header">
-        <div class="progress">Q {questionIdx()+1}/10</div>
-        <div class={`timer ${timeLeft() < 3 ? 'danger' : ''}`}>{timeLeft()}s</div>
+        <div class="progress">Q {questionIdx() + 1}/10</div>
+        <div class={`timer ${timeLeft() < 3 ? "danger" : ""}`}>
+          {timeLeft()}s
+        </div>
       </div>
-      {loading() ? (
+      <Show when={loading()}>
         <div class="loading">Generating questions...</div>
-      ) : q() ? (
+      </Show>
+      <Show when={!loading() && q()}>
         <div class="game-content">
           <img src={q().sprite} alt={q().name} class="pokemon-sprite" />
           <div class="options">
-            {q().options.map(o=> (
-              <button 
-                type="button"
-                onClick={() => answer(o)} 
-                class={`option ${answered() && o === q().name ? 'correct' : answered() && o !== q().name ? 'incorrect' : ''}`}
-                disabled={answered()}
-              >
-                {o}
-              </button>
-            ))}
+            <For each={q().options}>
+              {(o) => (
+                <button
+                  type="button"
+                  onClick={() => answer(o)}
+                  class={`option ${answered() && o === q().name ? "correct" : answered() && o !== q().name ? "incorrect" : ""}`}
+                  disabled={answered()}
+                >
+                  {o}
+                </button>
+              )}
+            </For>
           </div>
         </div>
-      ) : <div>Loading...</div>}
+      </Show>
+      <Show when={!loading() && !q()}>
+        <div>Loading...</div>
+      </Show>
     </div>
   );
 }
