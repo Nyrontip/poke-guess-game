@@ -1,0 +1,117 @@
+{
+  "info": {
+    "name": "Poke Guess Game API",
+    "description": "API para el juego de adivinar Pokémon",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Players",
+      "item": [
+        {
+          "name": "Create Player",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/players",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": \"player_new_001\",\n    \"name\": \"TestPlayer\",\n    \"avatar\": \"pikachu\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Players",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/players"
+          }
+        },
+        {
+          "name": "Get Player by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/players/:playerId"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Scores",
+      "item": [
+        {
+          "name": "Add Score",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/scores",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": \"score_new_001\",\n    \"player_id\": \"player_001\",\n    \"correct\": 8,\n    \"total_time_ms\": 42000,\n    \"score\": 880\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Top Scores (All Time)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/scores/top?period=all"
+          }
+        },
+        {
+          "name": "Get Top Scores (Month)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/scores/top?period=month"
+          }
+        },
+        {
+          "name": "Get Top Scores (Week)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/scores/top?period=week"
+          }
+        },
+        {
+          "name": "Get Top N Scores",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/scores/top/10?period=month"
+          }
+        },
+        {
+          "name": "Get Player Scores (All Time)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/scores/player/player_001?period=all"
+          }
+        },
+        {
+          "name": "Get Player Scores (Month)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/scores/player/player_001?period=month"
+          }
+        }
+      ]
+    }
+  ]
+}
+
