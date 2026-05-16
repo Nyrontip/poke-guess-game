@@ -56,9 +56,9 @@ async function addScore({id, player_id, correct, total_time_ms, score}) {
   }
 }
 
-async function getTopScores(limit=20) {
+async function getTopScores(limit=20, period='all') {
   try {
-    const res = await fetch(`${API_BASE}/scores/top/${limit}`);
+    const res = await fetch(`${API_BASE}/scores/top/${limit}?period=${period}`);
     if (!res.ok) throw new Error(`Failed to get top scores: ${res.status}`);
     return await res.json();
   } catch (e) {
@@ -67,4 +67,15 @@ async function getTopScores(limit=20) {
   }
 }
 
-export default { init, addPlayer, getPlayers, addScore, getTopScores };
+async function getPlayerScores(playerId, period='all') {
+  try {
+    const res = await fetch(`${API_BASE}/scores/player/${playerId}?period=${period}`);
+    if (!res.ok) throw new Error(`Failed to get player scores: ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.error('Error getting player scores:', e);
+    return [];
+  }
+}
+
+export default { init, addPlayer, getPlayers, addScore, getTopScores, getPlayerScores };
