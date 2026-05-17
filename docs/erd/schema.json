@@ -1,0 +1,181 @@
+{
+  "tables": {
+    "Player": {
+      "name": "Player",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "text",
+          "default": null,
+          "notNull": false,
+          "comment": null,
+          "check": null
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "bigint",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": "Jugadores registrados en el juego.",
+      "indexes": {
+        "Player_pkey": {
+          "name": "Player_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    },
+    "Score": {
+      "name": "Score",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "text",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "correct": {
+          "name": "correct",
+          "type": "integer",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "total_time_ms": {
+          "name": "total_time_ms",
+          "type": "integer",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "score": {
+          "name": "score",
+          "type": "integer",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "date": {
+          "name": "date",
+          "type": "bigint",
+          "default": null,
+          "notNull": true,
+          "comment": null,
+          "check": null
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3)",
+          "default": "CURRENT_TIMESTAMP",
+          "notNull": true,
+          "comment": null,
+          "check": null
+        }
+      },
+      "comment": "Resultados de cada partida.",
+      "indexes": {
+        "Score_pkey": {
+          "name": "Score_pkey",
+          "unique": true,
+          "columns": [
+            "id"
+          ],
+          "type": ""
+        },
+        "Score_player_id_idx": {
+          "name": "Score_player_id_idx",
+          "unique": false,
+          "columns": [
+            "player_id"
+          ],
+          "type": ""
+        },
+        "Score_correct_idx": {
+          "name": "Score_correct_idx",
+          "unique": false,
+          "columns": [
+            "correct"
+          ],
+          "type": ""
+        },
+        "Score_total_time_ms_idx": {
+          "name": "Score_total_time_ms_idx",
+          "unique": false,
+          "columns": [
+            "total_time_ms"
+          ],
+          "type": ""
+        }
+      },
+      "constraints": {
+        "PRIMARY_id": {
+          "type": "PRIMARY KEY",
+          "name": "PRIMARY_id",
+          "columnNames": [
+            "id"
+          ]
+        },
+        "PlayerToScore": {
+          "type": "FOREIGN KEY",
+          "name": "PlayerToScore",
+          "columnNames": [
+            "player_id"
+          ],
+          "targetTableName": "Player",
+          "targetColumnNames": [
+            "id"
+          ],
+          "updateConstraint": "NO_ACTION",
+          "deleteConstraint": "NO_ACTION"
+        }
+      }
+    }
+  },
+  "enums": {},
+  "extensions": {}
+}

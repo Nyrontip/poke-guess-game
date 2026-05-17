@@ -1,0 +1,42 @@
+// ⚠️ Schema de representación — NO uses Prisma realmente
+// Este archivo solo documenta el modelo de datos de PostgreSQL.
+// El backend real usa PHP + PDO, NO Prisma.
+
+generator client {
+  provider = "prisma-client-php" // solo documental, no se usa
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // documental: postgresql://postgres:postgres_password@postgres:5432/poke_guess
+}
+
+/// Jugadores registrados en el juego.
+model Player {
+  id         String  @id @default(uuid()) // en realidad se genera con nanoid desde el frontend
+  name       String
+  avatar     String?
+  created_at BigInt                       // timestamp Unix en milisegundos
+
+  scores     Score[]
+}
+
+/// Resultados de cada partida.
+model Score {
+  id            String   @id @default(uuid()) // en realidad se genera con nanoid desde el frontend
+  player_id     String
+  correct       Int
+  total_time_ms Int
+  score         Int
+  date          BigInt                        // timestamp Unix en milisegundos
+  created_at    DateTime @default(now())
+
+  player        Player   @relation(fields: [player_id], references: [id])
+
+  @@index([player_id], name: "idx_scores_player_id")
+  @@index([correct(sort: Desc)], name: "idx_scores_correct")
+  @@index([total_time_ms(sort: Asc)], name: "idx_scores_total_time")
+}
+
+/// Índices adicionales (modelados aparte porque Prisma no permite índices en tablas sin el campo):
+/// - players: CREATE INDEX idx_players_created ON players(created_at DESC);
