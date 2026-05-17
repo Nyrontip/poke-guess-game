@@ -106,13 +106,4 @@ class PlayerController {
         file_put_contents('php://stderr', $message);
     }
 
-    private function logScore(string $name, int $score): void {
-        $reset = "\033[0m";
-        $blue = "\033[38;5;33m"; // azul oscuro
-        $cyan = "\033[36m";
-
-        $date = date('Y-m-d H:i:s');
-        $message = "{$blue}[{$date}]{$reset} {$cyan}[REGISTRO]{$reset} Usuario: {$name} | Puntaje insertado: {$score}\n";
-        file_put_contents('php://stderr', $message);
-    }
 }
