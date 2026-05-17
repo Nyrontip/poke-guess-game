@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: poke-guess-db
+    environment:
+      POSTGRES_DB: poke_guess
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  php:
+    image: php:8.2-fpm
+    container_name: poke-guess-php
+    working_dir: /var/www/html
+    volumes:
+      - ./backend/src:/var/www/html/api
+      - ./backend/php.ini:/usr/local/etc/php/php.ini
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_NAME: poke_guess
+      DB_USER: postgres
+      DB_PASS: postgres_password
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.php
+
+  nginx:
+    image: nginx:alpine
+    container_name: poke-guess-web
+    ports:
+      - "8000:80"
+    volumes:
+      - ./dist:/var/www/html
+      - ./backend/src:/var/www/html/api
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    environment:
+      - BACKEND_HOST=http://php:9000
+
+volumes:
+  postgres_data:
